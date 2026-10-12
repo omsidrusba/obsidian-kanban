@@ -6,6 +6,7 @@ import { useNestedEntityPath } from 'src/dnd/components/Droppable';
 import { t } from 'src/lang/helpers';
 import { parseLaneTitle } from 'src/parsers/helpers/parser';
 
+import { FilterContext } from '../../filters/FilterContext';
 import { getDropAction } from '../Editor/helpers';
 import { GripIcon } from '../Icon/GripIcon';
 import { Icon } from '../Icon/Icon';
@@ -92,6 +93,10 @@ export const LaneHeader = memo(function LaneHeader({
   const lanePath = useNestedEntityPath(laneIndex);
 
   const { boardModifiers } = useContext(KanbanContext);
+  const filter = useContext(FilterContext);
+  const visibleCount = filter?.active
+    ? lane.children.filter((i) => filter.visible.has(i)).length
+    : undefined;
   const { settingsMenu, confirmAction, setConfirmAction } = useSettingsMenu({
     setEditState,
     path: lanePath,
@@ -154,6 +159,7 @@ export const LaneHeader = memo(function LaneHeader({
         <LaneLimitCounter
           editState={editState}
           itemCount={lane.children.length}
+          visibleCount={visibleCount}
           maxItems={lane.data.maxItems}
         />
 

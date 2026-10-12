@@ -14,6 +14,7 @@ import { DndManagerContext } from 'src/dnd/components/context';
 import { useDragHandle } from 'src/dnd/managers/DragManager';
 import { frontmatterKey } from 'src/parsers/common';
 
+import { FilterContext } from '../../filters/FilterContext';
 import { KanbanContext, SearchContext } from '../context';
 import { c } from '../helpers';
 import { EditState, EditingState, Item, isEditing } from '../types';
@@ -141,8 +142,10 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
   const elementRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const search = useContext(SearchContext);
+  const filter = useContext(FilterContext);
 
   const { itemIndex, ...innerProps } = props;
+  const isFilteredOut = !!filter?.active && !filter.visible.has(innerProps.item);
 
   const bindHandle = useDragHandle(measureRef, measureRef);
 
@@ -155,7 +158,7 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
         measureRef.current = el;
         bindHandle(el);
       }}
-      className={c('item-wrapper')}
+      className={classcat([c('item-wrapper'), { 'is-filtered-out': isFilteredOut }])}
     >
       <div ref={elementRef} className={classcat([c('item'), ...classModifiers])}>
         {props.isStatic ? (
