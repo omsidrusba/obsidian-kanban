@@ -691,7 +691,8 @@ button.kanban-plugin__new-item-button {
 .kanban-plugin__item {
   font-size: 0.875rem;
   border: 1px solid var(--background-modifier-border);
-  border-radius: var(--input-radius);
+  // Not --input-radius: on mobile Obsidian makes inputs pill-shaped, which turned cards into pills
+  border-radius: var(--kanban-card-radius, 5px);
   overflow: hidden;
   transition: 300ms opacity cubic-bezier(0.25, 1, 0.5, 1);
 
