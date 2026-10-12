@@ -63,13 +63,12 @@ export function FilterChip({ field }: { field: FilterField }) {
                   checked={selected.includes(tag)}
                   onChange={() => toggle(tag)}
                 />
-                {col && (
-                  <span
-                    className={c('filter-swatch')}
-                    style={{ background: col.backgroundColor, borderColor: col.color }}
-                  />
-                )}
-                {formatTag(tag)}
+                <span
+                  className={c('filter-option-label')}
+                  style={col ? { color: col.color, background: col.backgroundColor } : undefined}
+                >
+                  {formatTag(tag)}
+                </span>
               </label>
             );
           })}
