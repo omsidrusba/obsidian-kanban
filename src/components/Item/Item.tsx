@@ -158,7 +158,10 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
         measureRef.current = el;
         bindHandle(el);
       }}
-      className={classcat([c('item-wrapper'), { 'is-filtered-out': isFilteredOut }])}
+      className={c('item-wrapper')}
+      // An attribute, not a class: re-rendering className would wipe the class Obsidian's
+      // onNodeInserted adds, and the card would never register for drag and drop
+      data-filtered-out={isFilteredOut ? 'true' : undefined}
     >
       <div ref={elementRef} className={classcat([c('item'), ...classModifiers])}>
         {props.isStatic ? (
