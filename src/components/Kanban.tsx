@@ -12,6 +12,7 @@ import { createHTMLDndHandlers } from 'src/dnd/managers/DragManager';
 import { t } from 'src/lang/helpers';
 
 import { DndScope } from '../dnd/components/Scope';
+import { FilterBar } from '../filters/FilterBar';
 import { FilterContext, useFilterValue } from '../filters/FilterContext';
 import { getBoardModifiers } from '../helpers/boardModifiers';
 import { frontmatterKey } from '../parsers/common';
@@ -231,6 +232,7 @@ export const Kanban = ({ view, stateManager }: KanbanProps) => {
               {(isLaneFormVisible || boardData.children.length === 0) && (
                 <LaneForm onNewLane={onNewLane} closeLaneForm={closeLaneForm} />
               )}
+              {boardView === 'board' && <FilterBar />}
               {isSearching && (
                 <div className={c('search-wrapper')}>
                   <input
