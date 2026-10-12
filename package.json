@@ -1,6 +1,6 @@
 {
   "name": "obsidian-kanban",
-  "version": "2.0.51",
+  "version": "2.1.0-om.1",
   "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
   "main": "main.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "build": "node esbuild.config.mjs production",
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint:fix": "eslint ./src/**/*.{ts,tsx} --fix",
+    "test": "vitest run",
     "prettier": "prettier --write \"./src/**/*.{ts,tsx}\"",
     "clean": "yarn prettier && yarn lint:fix",
     "rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > release-notes.md && git add release-notes.md",
@@ -41,7 +42,8 @@
     "prettier": "^3.1.1",
     "replace": "^1.2.2",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "@tanstack/match-sorter-utils": "^8.15.1",

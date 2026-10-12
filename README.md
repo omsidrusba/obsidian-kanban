@@ -1,5 +1,8 @@
 # Obsidian Kanban Plugin
 
+> **Fork:** omsidrusba/obsidian-kanban adds a tag-based filter bar with saved views
+> (branch `feat/filter-bar`). Upstream: obsidian-community/obsidian-kanban (GPL-3.0).
+
 **The Kanban plugin is looking for new maintainers.** Interested? [Read more here.](https://github.com/mgmeyers/obsidian-kanban/blob/main/MAINTAINERS.md)
 
 ---

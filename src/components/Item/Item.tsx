@@ -14,6 +14,7 @@ import { DndManagerContext } from 'src/dnd/components/context';
 import { useDragHandle } from 'src/dnd/managers/DragManager';
 import { frontmatterKey } from 'src/parsers/common';
 
+import { FilterContext } from '../../filters/FilterContext';
 import { KanbanContext, SearchContext } from '../context';
 import { c } from '../helpers';
 import { EditState, EditingState, Item, isEditing } from '../types';
@@ -141,8 +142,10 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
   const elementRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const search = useContext(SearchContext);
+  const filter = useContext(FilterContext);
 
   const { itemIndex, ...innerProps } = props;
+  const isFilteredOut = !!filter?.active && !filter.visible.has(innerProps.item);
 
   const bindHandle = useDragHandle(measureRef, measureRef);
 
@@ -156,6 +159,9 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
         bindHandle(el);
       }}
       className={c('item-wrapper')}
+      // An attribute, not a class: re-rendering className would wipe the class Obsidian's
+      // onNodeInserted adds, and the card would never register for drag and drop
+      data-filtered-out={isFilteredOut ? 'true' : undefined}
     >
       <div ref={elementRef} className={classcat([c('item'), ...classModifiers])}>
         {props.isStatic ? (

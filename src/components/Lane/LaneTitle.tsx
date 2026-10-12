@@ -21,10 +21,12 @@ export interface LaneTitleProps {
 export function LaneLimitCounter({
   maxItems,
   itemCount,
+  visibleCount,
   editState,
 }: {
   maxItems: number;
   itemCount: number;
+  visibleCount?: number;
   editState: EditState;
 }) {
   const { stateManager } = useContext(KanbanContext);
@@ -41,7 +43,7 @@ export function LaneLimitCounter({
         },
       ])}
     >
-      {itemCount}
+      {visibleCount !== undefined ? `${visibleCount} / ${itemCount}` : itemCount}
       {maxItems > 0 && (
         <>
           <span className={c('lane-title-count-separator')}>/</span>
