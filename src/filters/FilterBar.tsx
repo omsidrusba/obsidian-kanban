@@ -9,6 +9,7 @@ import { FilterChip } from './FilterChip';
 import { FilterContext } from './FilterContext';
 import { promptViewName } from './SaveViewModal';
 import { isModified } from './match';
+import { addView, deleteView, renameView, updateView } from './views';
 
 export function FilterBar() {
   const filter = useContext(FilterContext);
@@ -23,22 +24,18 @@ export function FilterBar() {
   const saveAsNew = async () => {
     const name = await promptViewName(view.app, '', names);
     if (!name) return;
-    filter.saveViews([...views, { name, selection: state.selection }]);
+    filter.editViews((raw) => addView(raw, { name, selection: state.selection }));
     filter.setState({ activeView: name, selection: state.selection });
   };
 
-  const openMenu = (e: MouseEvent, name: string) => {
+  const openMenu = (pos: { x: number; y: number }, name: string) => {
     const menu = new Menu();
     const target = views.find((v) => v.name === name);
     if (name === state.activeView && modified) {
       menu.addItem((i) =>
         i
           .setTitle(t('Update view'))
-          .onClick(() =>
-            filter.saveViews(
-              views.map((v) => (v.name === name ? { ...v, selection: state.selection } : v))
-            )
-          )
+          .onClick(() => filter.editViews((raw) => updateView(raw, name, state.selection)))
       );
       menu.addItem((i) => i.setTitle(t('Save as new view…')).onClick(saveAsNew));
     }
@@ -50,7 +47,7 @@ export function FilterBar() {
           names.filter((n) => n !== name)
         );
         if (!next) return;
-        filter.saveViews(views.map((v) => (v.name === name ? { ...v, name: next } : v)));
+        filter.editViews((raw) => renameView(raw, name, next));
         if (state.activeView === name) {
           filter.setState({ activeView: next, selection: state.selection });
         }
@@ -59,11 +56,11 @@ export function FilterBar() {
     menu.addItem((i) =>
       i.setTitle(t('Delete view')).onClick(() => {
         if (!window.confirm(t('Delete this view?'))) return;
-        filter.saveViews(views.filter((v) => v.name !== name));
+        filter.editViews((raw) => deleteView(raw, name));
         if (state.activeView === name) filter.applyView(null);
       })
     );
-    if (target) menu.showAtMouseEvent(e);
+    if (target) menu.showAtPosition(pos);
   };
 
   return (
@@ -83,7 +80,10 @@ export function FilterBar() {
             key={v.name}
             className={classcat([c('filter-view'), { 'is-active': v.name === state.activeView }])}
             onClick={() => filter.applyView(v.name)}
-            onContextMenu={(e) => openMenu(e as unknown as MouseEvent, v.name)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              openMenu({ x: e.clientX, y: e.clientY }, v.name);
+            }}
           >
             {v.name}
             {v.name === state.activeView && modified && (
@@ -91,6 +91,18 @@ export function FilterBar() {
             )}
           </button>
         ))}
+        {current && (
+          <button
+            className={c('filter-view-menu')}
+            aria-label={t('View options')}
+            onClick={(e) => {
+              const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              openMenu({ x: r.left, y: r.bottom }, current.name);
+            }}
+          >
+            ⋯
+          </button>
+        )}
         {filter.active && (
           <button className={c('filter-view')} onClick={saveAsNew}>
             + {t('Save view')}

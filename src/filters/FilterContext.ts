@@ -22,7 +22,8 @@ export interface FilterContextProps {
   setSelection: (sel: Selection) => void;
   setState: (next: FilterState) => void;
   applyView: (name: string | null) => void;
-  saveViews: (views: FilterView[]) => void;
+  /** Edits the stored views (raw, unsanitized) and writes the board file. */
+  editViews: (op: (raw: unknown) => unknown[]) => void;
 }
 
 export const FilterContext = createContext<FilterContextProps | null>(null);
@@ -71,10 +72,16 @@ export function useFilterValue(
     [persist, views]
   );
 
-  const saveViews = useCallback(
-    (next: FilterView[]) => {
+  const editViews = useCallback(
+    (op: (raw: unknown) => unknown[]) => {
       stateManager.setState((b: Board) =>
-        update(b, { data: { settings: { 'filter-views': { $set: next } } } })
+        update(b, {
+          data: {
+            settings: {
+              'filter-views': { $set: op(b.data.settings['filter-views']) as FilterView[] },
+            },
+          },
+        })
       );
     },
     [stateManager]
@@ -104,6 +111,6 @@ export function useFilterValue(
     setSelection,
     setState: persist,
     applyView,
-    saveViews,
+    editViews,
   };
 }

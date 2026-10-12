@@ -156,6 +156,7 @@ const en = {
   'A view with this name already exists.': 'A view with this name already exists.',
   Clear: 'Clear',
   'Delete this view?': 'Delete this view?',
+  'View options': 'View options',
   'Card added — hidden by the current filter.': 'Card added — hidden by the current filter.',
   'Linked Page Metadata': 'Linked Page Metadata',
   'Inline Metadata': 'Inline Metadata',
