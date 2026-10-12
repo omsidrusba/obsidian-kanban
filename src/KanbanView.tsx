@@ -272,13 +272,13 @@ export class KanbanView extends TextFileView implements HoverParent {
     this.viewSettings['list-collapse'] ??= settings['list-collapse'] || [];
   }
 
-  getViewState<K extends keyof KanbanViewSettings>(key: K) {
+  getViewState<K extends keyof KanbanViewSettings & keyof KanbanSettings>(key: K) {
     const stateManager = this.plugin.stateManagers.get(this.file);
     const settingVal = stateManager.getSetting(key);
     return this.viewSettings[key] ?? settingVal;
   }
 
-  useViewState<K extends keyof KanbanViewSettings>(key: K) {
+  useViewState<K extends keyof KanbanViewSettings & keyof KanbanSettings>(key: K) {
     const stateManager = this.plugin.stateManagers.get(this.file);
     const settingVal = stateManager.useSetting(key);
     return this.viewSettings[key] ?? settingVal;

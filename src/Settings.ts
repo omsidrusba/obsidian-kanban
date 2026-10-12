@@ -40,7 +40,13 @@ import {
   defaultTimeTrigger,
   getListOptions,
 } from './settingHelpers';
+import { sanitizeFields } from './filters/match';
+import { FilterField, FilterState, FilterView } from './filters/types';
 import { cleanUpDateSettings, renderDateSettings } from './settings/DateColorSettings';
+import {
+  cleanUpFilterFieldSettings,
+  renderFilterFieldSettings,
+} from './settings/FilterFieldSettings';
 import { cleanupMetadataSettings, renderMetadataSettings } from './settings/MetadataSettings';
 import { cleanUpTagSettings, renderTagSettings } from './settings/TagColorSettings';
 import { cleanUpTagSortSettings, renderTagSortSettings } from './settings/TagSortSettings';
@@ -61,6 +67,8 @@ export interface KanbanSettings {
   'date-picker-week-start'?: number;
   'date-time-display-format'?: string;
   'date-trigger'?: string;
+  'filter-fields'?: FilterField[];
+  'filter-views'?: FilterView[];
   'full-list-lane-width'?: boolean;
   'hide-card-count'?: boolean;
   'inline-metadata-position'?: 'body' | 'footer' | 'metadata-table';
@@ -95,6 +103,7 @@ export interface KanbanSettings {
 export interface KanbanViewSettings {
   [frontmatterKey]?: KanbanFormat;
   'list-collapse'?: boolean[];
+  'filter-state'?: FilterState;
 }
 
 export const settingKeyLookup: Set<keyof KanbanSettings> = new Set([
@@ -109,6 +118,8 @@ export const settingKeyLookup: Set<keyof KanbanSettings> = new Set([
   'date-picker-week-start',
   'date-time-display-format',
   'date-trigger',
+  'filter-fields',
+  'filter-views',
   'full-list-lane-width',
   'hide-card-count',
   'inline-metadata-position',
@@ -588,6 +599,32 @@ export class SettingsManager {
         }
       });
     });
+
+    if (local) {
+      contentEl.createEl('h4', { text: t('Filter fields') });
+      contentEl.createEl('p', {
+        text: t('Group tags into fields for the filter bar, e.g. Type: #bug #enhancement.'),
+        cls: 'setting-item-description',
+      });
+
+      new Setting(contentEl).then((setting) => {
+        const [value] = this.getSetting('filter-fields', local);
+
+        renderFilterFieldSettings(setting.settingEl, sanitizeFields(value), (fields) =>
+          this.applySettingsUpdate({
+            'filter-fields': {
+              $set: fields,
+            },
+          })
+        );
+
+        this.cleanupFns.push(() => {
+          if (setting.settingEl) {
+            cleanUpFilterFieldSettings(setting.settingEl);
+          }
+        });
+      });
+    }
 
     contentEl.createEl('h4', { text: t('Date & Time') });
 
