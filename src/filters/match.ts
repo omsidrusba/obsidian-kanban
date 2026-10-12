@@ -123,3 +123,12 @@ export function resolveActiveView(activeView: string | null, views: FilterView[]
 export function laneCountLabel(visible: number | undefined, total: number, of: string): string {
   return visible === undefined ? String(total) : `${visible} ${of} ${total}`;
 }
+
+/** True when a popover opening rightwards from `left` would run past the viewport's right edge. */
+export function popoverAlignsRight(
+  left: number,
+  popoverWidth: number,
+  viewportWidth: number
+): boolean {
+  return left + popoverWidth > viewportWidth;
+}

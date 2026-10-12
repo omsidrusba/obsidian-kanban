@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { laneCountLabel, sanitizeFields, sanitizeViews } from './match';
+import { laneCountLabel, popoverAlignsRight, sanitizeFields, sanitizeViews } from './match';
 import { moveRow } from './validate';
 
 const collect = () => {
@@ -69,5 +69,14 @@ describe('laneCountLabel', () => {
   });
   it('shows visible of total while filtering, so a card limit reads unambiguously', () => {
     expect(laneCountLabel(3, 12, 'of')).toBe('3 of 12');
+  });
+});
+
+describe('popoverAlignsRight', () => {
+  it('opens to the right when it fits', () => {
+    expect(popoverAlignsRight(20, 200, 390)).toBe(false);
+  });
+  it('flips to the left when it would run off the right edge', () => {
+    expect(popoverAlignsRight(250, 200, 390)).toBe(true);
   });
 });

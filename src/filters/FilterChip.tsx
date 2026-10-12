@@ -8,6 +8,7 @@ import { c } from '../components/helpers';
 import { TagColor } from '../components/types';
 import { t } from '../lang/helpers';
 import { FilterContext } from './FilterContext';
+import { popoverAlignsRight } from './match';
 import { FilterField, NOT_SET } from './types';
 
 export function formatTag(tag: string): string {
@@ -20,6 +21,7 @@ export function FilterChip({ field }: { field: FilterField }) {
   const filter = useContext(FilterContext);
   const { stateManager } = useContext(KanbanContext);
   const [open, setOpen] = useState(false);
+  const [alignRight, setAlignRight] = useState(false);
   const ref = useOnclickOutside(() => setOpen(false));
   if (!filter) return null;
 
@@ -43,7 +45,13 @@ export function FilterChip({ field }: { field: FilterField }) {
     <div ref={ref} className={c('filter-chip-wrapper')}>
       <button
         className={classcat([c('filter-chip'), { 'is-active': selected.length > 0 }])}
-        onClick={() => setOpen(!open)}
+        onClick={(e) => {
+          // Open leftwards near the right edge so the list stays on screen (phones, narrow panes)
+          const el = e.currentTarget as HTMLElement;
+          const win = el.ownerDocument.defaultView;
+          setAlignRight(popoverAlignsRight(el.getBoundingClientRect().left, 220, win.innerWidth));
+          setOpen(!open);
+        }}
         onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
         aria-expanded={open}
       >
@@ -51,7 +59,7 @@ export function FilterChip({ field }: { field: FilterField }) {
       </button>
       {open && (
         <div
-          className={c('filter-popover')}
+          className={classcat([c('filter-popover'), { 'is-align-right': alignRight }])}
           onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
         >
           {[...field.tags, NOT_SET].map((tag) => {
