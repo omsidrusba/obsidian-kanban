@@ -1,6 +1,7 @@
 import animateScrollTo from 'animated-scroll-to';
 import classcat from 'classcat';
 import update from 'immutability-helper';
+import { Notice } from 'obsidian';
 import { Fragment, memo, useCallback, useContext, useMemo, useRef, useState } from 'preact/compat';
 import {
   DraggableProps,
@@ -12,9 +13,12 @@ import { ScrollContainer } from 'src/dnd/components/ScrollContainer';
 import { SortPlaceholder } from 'src/dnd/components/SortPlaceholder';
 import { Sortable, StaticSortable } from 'src/dnd/components/Sortable';
 import { useDragHandle } from 'src/dnd/managers/DragManager';
+import { t } from 'src/lang/helpers';
 import { frontmatterKey } from 'src/parsers/common';
 import { getTaskStatusDone } from 'src/parsers/helpers/inlineMetadata';
 
+import { FilterContext } from '../../filters/FilterContext';
+import { matchesFilters } from '../../filters/match';
 import { Items } from '../Item/Item';
 import { ItemForm } from '../Item/ItemForm';
 import { KanbanContext, SearchContext, SortContext } from '../context';
@@ -44,6 +48,7 @@ function DraggableLaneRaw({
 
   const { stateManager, boardModifiers, view } = useContext(KanbanContext);
   const search = useContext(SearchContext);
+  const filter = useContext(FilterContext);
 
   const boardView = view.useViewState(frontmatterKey);
   const path = useNestedEntityPath(laneIndex);
@@ -113,8 +118,15 @@ function DraggableLaneRaw({
           });
         }
       });
+
+      if (filter?.active) {
+        const hidden = items.filter(
+          (it) => !matchesFilters(it.data.metadata.tags, filter.fields, filter.state.selection)
+        );
+        if (hidden.length) new Notice(t('Card added — hidden by the current filter.'));
+      }
     },
-    [boardModifiers, path, lane, shouldPrepend]
+    [boardModifiers, path, lane, shouldPrepend, filter]
   );
 
   const DroppableComponent = isStatic ? StaticDroppable : Droppable;
