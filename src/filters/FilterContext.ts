@@ -7,6 +7,7 @@ import { Board, Item } from '../components/types';
 import {
   isActive,
   matchesFilters,
+  resolveActiveView,
   sanitizeFields,
   sanitizeSelection,
   sanitizeViews,
@@ -105,7 +106,7 @@ export function useFilterValue(
   return {
     fields,
     views,
-    state: { ...state, selection },
+    state: { activeView: resolveActiveView(state.activeView, views), selection },
     active,
     visible,
     setSelection,

@@ -1873,3 +1873,26 @@ body:not(.native-scrollbars) .kanban-plugin__scroll-container::-webkit-scrollbar
   background: transparent;
   color: var(--text-muted);
 }
+
+.kanban-plugin__filter-field-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.kanban-plugin__filter-field-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  input:first-child {
+    flex: 0 0 9em;
+  }
+  input:nth-child(2) {
+    flex: 1;
+  }
+}
+.kanban-plugin__filter-field-error {
+  color: var(--text-error);
+  font-size: var(--font-ui-smaller);
+  padding: 2px 0 0 2px;
+}

@@ -145,6 +145,7 @@ const en = {
   'Tags (space or comma separated)': 'Tags (space or comma separated)',
   'Add field': 'Add field',
   'Field names must be unique.': 'Field names must be unique.',
+  'Give this field a name.': 'Give this field a name.',
   'Not set': 'Not set',
   All: 'All',
   'Save view': 'Save view',

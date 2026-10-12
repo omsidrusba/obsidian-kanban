@@ -86,3 +86,7 @@ const key = (sel: Selection) =>
 export function isModified(view: FilterView | undefined, sel: Selection): boolean {
   return key(view?.selection ?? {}) !== key(sel);
 }
+
+export function resolveActiveView(activeView: string | null, views: FilterView[]): string | null {
+  return activeView && views.some((v) => v.name === activeView) ? activeView : null;
+}
