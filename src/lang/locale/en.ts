@@ -145,6 +145,7 @@ const en = {
   'Tags (space or comma separated)': 'Tags (space or comma separated)',
   'Add field': 'Add field',
   'Field names must be unique.': 'Field names must be unique.',
+  'Not set': 'Not set',
   'Linked Page Metadata': 'Linked Page Metadata',
   'Inline Metadata': 'Inline Metadata',
   'Display metadata for the first note linked within a card. Specify which metadata keys to display below. An optional label can be provided, and labels can be hidden altogether.':

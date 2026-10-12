@@ -1790,3 +1790,46 @@ body:not(.native-scrollbars) .kanban-plugin__scroll-container::-webkit-scrollbar
 .kanban-plugin__item-wrapper.is-filtered-out {
   display: none;
 }
+
+.kanban-plugin__filter-chip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.kanban-plugin__filter-chip {
+  font-size: var(--font-ui-small);
+  padding: 2px 8px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--background-modifier-border);
+  background: transparent;
+  color: var(--text-muted);
+  &.is-active {
+    color: var(--text-normal);
+    border-color: var(--interactive-accent);
+  }
+}
+.kanban-plugin__filter-popover {
+  position: absolute;
+  z-index: var(--layer-popover);
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s);
+}
+.kanban-plugin__filter-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+}
+.kanban-plugin__filter-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid;
+}
