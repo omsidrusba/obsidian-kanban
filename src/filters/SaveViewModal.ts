@@ -2,6 +2,34 @@ import { App, Modal, Setting } from 'obsidian';
 
 import { t } from '../lang/helpers';
 
+export function confirmAction(app: App, message: string, confirmLabel: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const modal = new (class extends Modal {
+      confirmed = false;
+
+      onOpen() {
+        this.contentEl.createEl('p', { text: message });
+        new Setting(this.contentEl)
+          .addButton((b) => b.setButtonText(t('Cancel')).onClick(() => this.close()))
+          .addButton((b) =>
+            b
+              .setButtonText(confirmLabel)
+              .setWarning()
+              .onClick(() => {
+                this.confirmed = true;
+                this.close();
+              })
+          );
+      }
+
+      onClose() {
+        resolve(this.confirmed);
+      }
+    })(app);
+    modal.open();
+  });
+}
+
 export function promptViewName(app: App, initial: string, taken: string[]): Promise<string | null> {
   return new Promise((resolve) => {
     const modal = new (class extends Modal {

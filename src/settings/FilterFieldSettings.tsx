@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode, useRef, useState } from 'preact/compat'
 import { Icon } from '../components/Icon/Icon';
 import { c } from '../components/helpers';
 import { FilterField } from '../filters/types';
-import { FieldRow, validateFieldRows } from '../filters/validate';
+import { FieldRow, moveRow, validateFieldRows } from '../filters/validate';
 import { t } from '../lang/helpers';
 
 type KeyedRow = FieldRow & { id: number };
@@ -50,6 +50,20 @@ function FilterFieldEditor({
               value={row.tags}
               onChange={(e) => setRow(row.id, { tags: (e.target as HTMLInputElement).value })}
             />
+            <a
+              className="clickable-icon"
+              aria-label={t('Move up')}
+              onClick={() => commit(moveRow(rows, i, -1))}
+            >
+              <Icon name="lucide-arrow-up" />
+            </a>
+            <a
+              className="clickable-icon"
+              aria-label={t('Move down')}
+              onClick={() => commit(moveRow(rows, i, 1))}
+            >
+              <Icon name="lucide-arrow-down" />
+            </a>
             <a
               className="clickable-icon"
               aria-label={t('Delete')}
