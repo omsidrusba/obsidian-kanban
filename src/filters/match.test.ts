@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
+
 import {
-  isActive, isModified, matchesFilters, normalizeTag,
-  sanitizeFields, sanitizeSelection, sanitizeViews,
+  isActive,
+  isModified,
+  matchesFilters,
+  normalizeTag,
+  sanitizeFields,
+  sanitizeSelection,
+  sanitizeViews,
 } from './match';
 import { NOT_SET } from './types';
 
@@ -64,7 +70,7 @@ describe('sanitize', () => {
     const raw = [
       { name: 'Type', tags: ['Bug', '#enhancement', ''] },
       { name: '', tags: ['#x'] },
-      { name: 'type', tags: ['#dup'] },          // duplicate name (case-insensitive)
+      { name: 'type', tags: ['#dup'] }, // duplicate name (case-insensitive)
       { name: 'Area', tags: 'not-an-array' },
       null,
     ];
@@ -72,15 +78,16 @@ describe('sanitize', () => {
     expect(sanitizeFields('garbage')).toEqual([]);
   });
   it('drops unknown fields and values from a selection', () => {
-    expect(sanitizeSelection({ Type: ['#bug', '#ghost', NOT_SET], Ghost: ['#x'] }, fields))
-      .toEqual({ Type: ['#bug', NOT_SET] });
+    expect(sanitizeSelection({ Type: ['#bug', '#ghost', NOT_SET], Ghost: ['#x'] }, fields)).toEqual(
+      { Type: ['#bug', NOT_SET] }
+    );
     expect(sanitizeSelection(null, fields)).toEqual({});
   });
   it('keeps views with a name and sanitizes their selection', () => {
     const raw = [
       { name: 'Bugs', selection: { Type: ['#bug'], Ghost: ['#x'] } },
       { name: '', selection: {} },
-      { name: 'bugs', selection: {} },           // duplicate
+      { name: 'bugs', selection: {} }, // duplicate
     ];
     expect(sanitizeViews(raw, fields)).toEqual([{ name: 'Bugs', selection: { Type: ['#bug'] } }]);
   });
