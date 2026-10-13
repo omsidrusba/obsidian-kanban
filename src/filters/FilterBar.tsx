@@ -7,7 +7,7 @@ import { c } from '../components/helpers';
 import { t } from '../lang/helpers';
 import { FilterChip } from './FilterChip';
 import { FilterContext } from './FilterContext';
-import { promptViewName } from './SaveViewModal';
+import { confirmAction, promptViewName } from './SaveViewModal';
 import { isModified } from './match';
 import { addView, deleteView, renameView, updateView } from './views';
 
@@ -54,8 +54,9 @@ export function FilterBar() {
       })
     );
     menu.addItem((i) =>
-      i.setTitle(t('Delete view')).onClick(() => {
-        if (!window.confirm(t('Delete this view?'))) return;
+      i.setTitle(t('Delete view')).onClick(async () => {
+        // An Obsidian modal opens in the board's own window, unlike window.confirm in a popout
+        if (!(await confirmAction(view.app, t('Delete this view?'), t('Delete view')))) return;
         filter.editViews((raw) => deleteView(raw, name));
         if (state.activeView === name) filter.applyView(null);
       })

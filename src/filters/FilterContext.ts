@@ -31,6 +31,8 @@ export const FilterContext = createContext<FilterContextProps | null>(null);
 
 const EMPTY: FilterState = { activeView: null, selection: {} };
 
+const warn = (msg: string) => console.warn(`Kanban filter bar: ${msg}`);
+
 export function useFilterValue(
   board: Board,
   view: KanbanView,
@@ -38,8 +40,8 @@ export function useFilterValue(
 ): FilterContextProps | null {
   const rawFields = stateManager.useSetting('filter-fields');
   const rawViews = stateManager.useSetting('filter-views');
-  const fields = useMemo(() => sanitizeFields(rawFields), [rawFields]);
-  const views = useMemo(() => sanitizeViews(rawViews, fields), [rawViews, fields]);
+  const fields = useMemo(() => sanitizeFields(rawFields, warn), [rawFields]);
+  const views = useMemo(() => sanitizeViews(rawViews, fields, warn), [rawViews, fields]);
 
   const [state, setStateRaw] = useState<FilterState>(() => {
     const saved = view.viewSettings['filter-state'];
@@ -102,16 +104,32 @@ export function useFilterValue(
     return set;
   }, [board, fields, selection, active]);
 
-  if (fields.length === 0) return null;
-  return {
-    fields,
-    views,
-    state: { activeView: resolveActiveView(state.activeView, views), selection },
-    active,
-    visible,
-    setSelection,
-    setState: persist,
-    applyView,
-    editViews,
-  };
+  // Memoized so memo'd cards and lane headers only re-render when the filter actually changes
+  const value = useMemo<FilterContextProps>(
+    () => ({
+      fields,
+      views,
+      state: { activeView: resolveActiveView(state.activeView, views), selection },
+      active,
+      visible,
+      setSelection,
+      setState: persist,
+      applyView,
+      editViews,
+    }),
+    [
+      fields,
+      views,
+      state.activeView,
+      selection,
+      active,
+      visible,
+      setSelection,
+      persist,
+      applyView,
+      editViews,
+    ]
+  );
+
+  return fields.length === 0 ? null : value;
 }

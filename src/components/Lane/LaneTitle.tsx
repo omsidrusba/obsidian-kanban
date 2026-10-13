@@ -1,7 +1,9 @@
 import { EditorView, ViewUpdate } from '@codemirror/view';
 import classcat from 'classcat';
 import { Dispatch, StateUpdater, useCallback, useContext, useEffect, useRef } from 'preact/hooks';
+import { laneCountLabel } from 'src/filters/match';
 import { laneTitleWithMaxItems } from 'src/helpers';
+import { t } from 'src/lang/helpers';
 
 import { MarkdownEditor, allowNewLine } from '../Editor/MarkdownEditor';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
@@ -43,7 +45,7 @@ export function LaneLimitCounter({
         },
       ])}
     >
-      {visibleCount !== undefined ? `${visibleCount} / ${itemCount}` : itemCount}
+      {laneCountLabel(visibleCount, itemCount, t('of'))}
       {maxItems > 0 && (
         <>
           <span className={c('lane-title-count-separator')}>/</span>

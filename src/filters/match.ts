@@ -11,15 +11,29 @@ export function normalizeTag(t: string): string {
 const isObj = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
-export function sanitizeFields(raw: unknown): FilterField[] {
-  if (!Array.isArray(raw)) return [];
+/** Receives a human-readable description of each malformed settings entry that was skipped. */
+export type IssueReporter = (msg: string) => void;
+
+export function sanitizeFields(raw: unknown, report?: IssueReporter): FilterField[] {
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) {
+    report?.('filter-fields is not a list; ignoring it');
+    return [];
+  }
   const seen = new Set<string>();
   const out: FilterField[] = [];
-  for (const f of raw) {
-    if (!isObj(f) || typeof f.name !== 'string' || !Array.isArray(f.tags)) continue;
-    const name = f.name.trim();
-    if (!name || seen.has(name.toLowerCase())) continue;
-    const tags = [...new Set(f.tags.map((t) => normalizeTag(String(t))).filter(Boolean))];
+  for (const [i, f] of raw.entries()) {
+    const name = isObj(f) && typeof f.name === 'string' ? f.name.trim() : '';
+    if (!name || !Array.isArray((f as { tags?: unknown }).tags)) {
+      report?.(`filter-fields[${i}] has no name or no tag list; skipped`);
+      continue;
+    }
+    if (seen.has(name.toLowerCase())) {
+      report?.(`filter-fields[${i}] duplicates the name "${name}"; skipped`);
+      continue;
+    }
+    const rawTags = (f as { tags: unknown[] }).tags;
+    const tags = [...new Set(rawTags.map((t) => normalizeTag(String(t))).filter(Boolean))];
     seen.add(name.toLowerCase());
     out.push({ name, tags });
   }
@@ -41,14 +55,28 @@ export function sanitizeSelection(sel: unknown, fields: FilterField[]): Selectio
   return out;
 }
 
-export function sanitizeViews(raw: unknown, fields: FilterField[]): FilterView[] {
-  if (!Array.isArray(raw)) return [];
+export function sanitizeViews(
+  raw: unknown,
+  fields: FilterField[],
+  report?: IssueReporter
+): FilterView[] {
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) {
+    report?.('filter-views is not a list; ignoring it');
+    return [];
+  }
   const seen = new Set<string>();
   const out: FilterView[] = [];
-  for (const v of raw) {
-    if (!isObj(v) || typeof v.name !== 'string') continue;
-    const name = v.name.trim();
-    if (!name || seen.has(name.toLowerCase())) continue;
+  for (const [i, v] of raw.entries()) {
+    const name = isObj(v) && typeof v.name === 'string' ? v.name.trim() : '';
+    if (!name) {
+      report?.(`filter-views[${i}] has no name; skipped`);
+      continue;
+    }
+    if (seen.has(name.toLowerCase())) {
+      report?.(`filter-views[${i}] duplicates the name "${name}"; skipped`);
+      continue;
+    }
     seen.add(name.toLowerCase());
     out.push({ name, selection: sanitizeSelection(v.selection, fields) });
   }
@@ -89,4 +117,18 @@ export function isModified(view: FilterView | undefined, sel: Selection): boolea
 
 export function resolveActiveView(activeView: string | null, views: FilterView[]): string | null {
   return activeView && views.some((v) => v.name === activeView) ? activeView : null;
+}
+
+/** Lane header count: the plain total, or "visible of total" while a filter is active. */
+export function laneCountLabel(visible: number | undefined, total: number, of: string): string {
+  return visible === undefined ? String(total) : `${visible} ${of} ${total}`;
+}
+
+/** True when a popover opening rightwards from `left` would run past the viewport's right edge. */
+export function popoverAlignsRight(
+  left: number,
+  popoverWidth: number,
+  viewportWidth: number
+): boolean {
+  return left + popoverWidth > viewportWidth;
 }

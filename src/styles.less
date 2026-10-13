@@ -691,7 +691,8 @@ button.kanban-plugin__new-item-button {
 .kanban-plugin__item {
   font-size: 0.875rem;
   border: 1px solid var(--background-modifier-border);
-  border-radius: var(--input-radius);
+  // Not --input-radius: on mobile Obsidian makes inputs pill-shaped, which turned cards into pills
+  border-radius: var(--kanban-card-radius, 5px);
   overflow: hidden;
   transition: 300ms opacity cubic-bezier(0.25, 1, 0.5, 1);
 
@@ -1895,4 +1896,38 @@ body:not(.native-scrollbars) .kanban-plugin__scroll-container::-webkit-scrollbar
   color: var(--text-error);
   font-size: var(--font-ui-smaller);
   padding: 2px 0 0 2px;
+}
+
+.kanban-plugin__filter-popover.is-align-right {
+  left: auto;
+  right: 0;
+}
+.kanban-plugin__filter-popover {
+  max-width: calc(100vw - 24px);
+}
+
+// Touch: larger targets and a settings editor that fits a phone
+.is-mobile {
+  .kanban-plugin__filter-bar {
+    padding: 6px 8px 4px;
+  }
+  .kanban-plugin__filter-view,
+  .kanban-plugin__filter-chip,
+  .kanban-plugin__filter-view-menu,
+  .kanban-plugin__filter-clear {
+    min-height: 34px;
+    padding: 4px 12px;
+    font-size: var(--font-ui-medium);
+  }
+  .kanban-plugin__filter-option {
+    min-height: 40px;
+    font-size: var(--font-ui-medium);
+  }
+  .kanban-plugin__filter-field-row {
+    flex-wrap: wrap;
+    input:first-child,
+    input:nth-child(2) {
+      flex: 1 1 100%;
+    }
+  }
 }

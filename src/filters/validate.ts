@@ -41,3 +41,12 @@ export function validateFieldRows(rows: FieldRow[]): {
 
   return { fields: errors.some(Boolean) ? null : fields, errors };
 }
+
+/** Returns a copy with the row at `index` moved one step (`-1` up, `1` down); edges are no-ops. */
+export function moveRow<T>(rows: T[], index: number, step: -1 | 1): T[] {
+  const to = index + step;
+  if (to < 0 || to >= rows.length) return rows.slice();
+  const next = rows.slice();
+  [next[index], next[to]] = [next[to], next[index]];
+  return next;
+}
